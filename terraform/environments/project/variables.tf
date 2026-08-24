@@ -48,10 +48,17 @@ variable "key_name" {
 }
 
 # --- GitLab server -------------------------------------------------------
+# Instance types below are restricted to this AWS account's free-tier-
+# eligible types: t3.micro, t3.small, c7i-flex.large, m7i-flex.large.
 
 variable "gitlab_instance_type" {
   type    = string
-  default = "t3.medium"
+  default = "c7i-flex.large" # GitLab CE wants ~4GB RAM minimum; t3.small (2GB) is too tight
+
+  validation {
+    condition     = contains(["t3.micro", "t3.small", "c7i-flex.large", "m7i-flex.large"], var.gitlab_instance_type)
+    error_message = "gitlab_instance_type must be one of: t3.micro, t3.small, c7i-flex.large, m7i-flex.large."
+  }
 }
 
 variable "gitlab_root_volume_size" {
@@ -75,13 +82,23 @@ variable "gitlab_external_url" {
 variable "runner_manager_instance_type" {
   type    = string
   default = "t3.small"
+
+  validation {
+    condition     = contains(["t3.micro", "t3.small", "c7i-flex.large", "m7i-flex.large"], var.runner_manager_instance_type)
+    error_message = "runner_manager_instance_type must be one of: t3.micro, t3.small, c7i-flex.large, m7i-flex.large."
+  }
 }
 
 # --- Workers ---------------------------------------------------------
 
 variable "worker_instance_type" {
   type    = string
-  default = "t3.medium"
+  default = "t3.small" # bump to c7i-flex.large/m7i-flex.large in tfvars if CI jobs need more RAM
+
+  validation {
+    condition     = contains(["t3.micro", "t3.small", "c7i-flex.large", "m7i-flex.large"], var.worker_instance_type)
+    error_message = "worker_instance_type must be one of: t3.micro, t3.small, c7i-flex.large, m7i-flex.large."
+  }
 }
 
 variable "worker_root_volume_size" {
