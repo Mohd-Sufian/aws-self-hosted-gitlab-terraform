@@ -30,7 +30,7 @@ terraform/
     ├── runner-manager/        # Runner Manager EC2
     └── runner-worker/         # Launch Template + Auto Scaling Group
 
-scripts/            # EC2 user-data: gitlab-server.sh, runner-manager.sh, worker.sh
+scripts/            # EC2 user-data: gitlab-server.sh, runner-manager.sh, worker.sh | runner-config.toml example
 gitlab/.gitlab-ci.yml # example pipeline for the instance executor
 packer/worker.pkr.hcl # placeholder for a future baked worker AMI
 docs/                # architecture, deployment, security, troubleshooting
