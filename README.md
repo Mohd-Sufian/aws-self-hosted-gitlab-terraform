@@ -21,7 +21,7 @@ destroy` tears it down cleanly.
 
 ```
 terraform/
-├── environments/prod/     # root module: wires everything together
+├── environments/project/     # root module: wires everything together
 └── modules/
     ├── networking/         # VPC, 1 public subnet, IGW, route table
     ├── security/            # gitlab / runner-manager / worker security groups
@@ -39,7 +39,7 @@ docs/                # architecture, deployment, security, troubleshooting
 ## Quick start
 
 ```bash
-cd terraform/environments/prod
+cd terraform/environments/project
 cp terraform.tfvars.example terraform.tfvars
 # edit terraform.tfvars — at minimum set ssh_allowed_cidr to your IP
 

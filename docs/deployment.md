@@ -9,7 +9,7 @@
 ## First apply
 
 ```bash
-cd terraform/environments/prod
+cd terraform/environments/project
 cp terraform.tfvars.example terraform.tfvars
 # edit terraform.tfvars: ssh_allowed_cidr, gitlab_external_url, key_name, etc.
 
@@ -53,7 +53,7 @@ point) and restart `gitlab-runner`.
 ## Destroying
 
 ```bash
-cd terraform/environments/prod
+cd terraform/environments/project
 terraform destroy
 ```
 
