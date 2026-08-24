@@ -17,6 +17,22 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+resource "aws_eip" "gitlab" {
+  domain = "vpc"
+
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-gitlab-eip"
+  })
+}
+
+locals {
+  # Use a real domain if one was supplied; otherwise fall back to the EIP
+  # we just allocated. Either way this is known BEFORE the instance boots,
+  # so external_url is correct from the very first cloud-init run - no
+  # second apply needed.
+  gitlab_external_url = coalesce(var.gitlab_external_url, "http://${aws_eip.gitlab.public_ip}")
+}
+
 resource "aws_instance" "gitlab" {
   ami                         = coalesce(var.gitlab_ami, data.aws_ami.ubuntu.id)
   instance_type               = var.gitlab_instance_type
@@ -32,7 +48,7 @@ resource "aws_instance" "gitlab" {
   }
 
   user_data = templatefile("${path.module}/../../../scripts/gitlab-server.sh", {
-    gitlab_external_url = var.gitlab_external_url
+    gitlab_external_url = local.gitlab_external_url
   })
 
   tags = merge(var.tags, {
@@ -41,11 +57,7 @@ resource "aws_instance" "gitlab" {
   })
 }
 
-resource "aws_eip" "gitlab" {
-  domain   = "vpc"
-  instance = aws_instance.gitlab.id
-
-  tags = merge(var.tags, {
-    Name = "${var.project_name}-gitlab-eip"
-  })
+resource "aws_eip_association" "gitlab" {
+  instance_id   = aws_instance.gitlab.id
+  allocation_id = aws_eip.gitlab.id
 }

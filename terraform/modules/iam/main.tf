@@ -25,12 +25,25 @@ resource "aws_iam_role" "runner_manager" {
 }
 
 data "aws_iam_policy_document" "runner_manager" {
+  # List/describe-style ASG calls are account-wide - they don't target a
+  # single ASG, so a resource-tag condition can't be evaluated against them
+  # and would just cause a silent deny. These stay unconditioned.
   statement {
-    sid    = "FleetingAutoScalingControl"
+    sid    = "FleetingAutoScalingDescribe"
     effect = "Allow"
     actions = [
       "autoscaling:DescribeAutoScalingGroups",
       "autoscaling:DescribeAutoScalingInstances",
+    ]
+    resources = ["*"]
+  }
+
+  # These DO target one named ASG and support resource-level permissions,
+  # so we can scope them to just the tagged worker ASG.
+  statement {
+    sid    = "FleetingAutoScalingControl"
+    effect = "Allow"
+    actions = [
       "autoscaling:SetDesiredCapacity",
       "autoscaling:TerminateInstanceInAutoScalingGroup",
       "autoscaling:UpdateAutoScalingGroup",
@@ -50,6 +63,7 @@ data "aws_iam_policy_document" "runner_manager" {
       "ec2:DescribeInstances",
       "ec2:DescribeInstanceStatus",
       "ec2:DescribeInstanceTypes",
+      "ec2:DescribeTags",
     ]
     resources = ["*"]
   }
@@ -61,6 +75,24 @@ data "aws_iam_policy_document" "runner_manager" {
       "ec2:CreateTags",
     ]
     resources = ["arn:aws:ec2:*:*:instance/*"]
+  }
+
+  # Required by fleeting-plugin-aws's default use_static_credentials = false:
+  # it connects to each new worker by pushing a temporary key via EC2
+  # Instance Connect, not a static keypair. Scoped by the tag AWS itself
+  # applies to every instance an ASG launches.
+  statement {
+    sid    = "FleetingInstanceConnect"
+    effect = "Allow"
+    actions = [
+      "ec2-instance-connect:SendSSHPublicKey",
+    ]
+    resources = ["arn:aws:ec2:*:*:instance/*"]
+    condition {
+      test     = "StringEquals"
+      variable = "ec2:ResourceTag/aws:autoscaling:groupName"
+      values   = ["${var.project_name}-workers"]
+    }
   }
 }
 

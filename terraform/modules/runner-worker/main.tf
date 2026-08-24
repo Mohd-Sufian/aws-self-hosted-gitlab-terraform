@@ -61,11 +61,17 @@ resource "aws_launch_template" "worker" {
 }
 
 resource "aws_autoscaling_group" "worker" {
-  name                = var.asg_name
-  vpc_zone_identifier = [var.subnet_id]
-  min_size            = var.worker_min_size
-  max_size            = var.worker_max_size
-  desired_capacity    = var.worker_desired_capacity
+  name                      = var.asg_name
+  vpc_zone_identifier       = [var.subnet_id]
+  min_size                  = var.worker_min_size
+  max_size                  = var.worker_max_size
+  desired_capacity          = var.worker_desired_capacity
+
+  # Per fleeting-plugin-aws's own setup requirements: it manages scale-in
+  # itself (via autoscaling:TerminateInstanceInAutoScalingGroup), so this
+  # ASG shouldn't have its own opinions about it.
+  protect_from_scale_in     = true
+  suspended_processes       = ["AZRebalance"]
 
   launch_template {
     id      = aws_launch_template.worker.id

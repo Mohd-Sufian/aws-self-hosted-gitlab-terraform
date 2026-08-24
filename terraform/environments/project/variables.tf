@@ -73,8 +73,9 @@ variable "gitlab_ami" {
 }
 
 variable "gitlab_external_url" {
-  description = "GitLab external_url. Use http://<elastic-ip> until you own a domain, then switch to https://git.yourdomain.com"
+  description = "Optional override, e.g. https://git.yourdomain.com. Leave unset/null and Terraform will use http://<the-elastic-ip> automatically."
   type        = string
+  default     = null
 }
 
 # --- Runner Manager ------------------------------------------------------

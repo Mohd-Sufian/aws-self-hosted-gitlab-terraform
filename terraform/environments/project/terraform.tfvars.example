@@ -16,9 +16,10 @@ ssh_allowed_cidr = "203.0.113.4/32"
 # m7i-flex.large.
 gitlab_instance_type    = "c7i-flex.large"
 gitlab_root_volume_size = 20
-# gitlab_external_url is required - fill in once you know the Elastic IP,
-# or set it after the first apply and re-apply (see docs/deployment.md).
-gitlab_external_url = "http://REPLACE_WITH_ELASTIC_IP"
+# gitlab_external_url is OPTIONAL. Leave it commented out and Terraform
+# will automatically use http://<the-elastic-ip> - no manual step needed.
+# Uncomment only once you own a real domain pointed at the Elastic IP:
+# gitlab_external_url = "https://git.yourdomain.com"
 
 runner_manager_instance_type = "t3.small"
 

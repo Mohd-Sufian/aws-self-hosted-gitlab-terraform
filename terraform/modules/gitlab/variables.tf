@@ -25,8 +25,9 @@ variable "gitlab_ami" {
 }
 
 variable "gitlab_external_url" {
-  description = "GitLab external_url, e.g. http://<eip> until a domain + HTTPS are set up"
+  description = "Optional override, e.g. https://git.yourdomain.com. Leave null to auto-derive http://<elastic-ip>."
   type        = string
+  default     = null
 }
 
 variable "key_name" {
