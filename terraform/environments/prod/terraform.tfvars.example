@@ -1,0 +1,26 @@
+aws_region   = "ap-south-1"
+project_name = "gitlab-platform"
+environment  = "prod"
+
+vpc_cidr           = "10.0.0.0/16"
+public_subnet_cidr = "10.0.1.0/24"
+availability_zone  = "ap-south-1a"
+
+# REQUIRED - replace with your own IP before applying
+ssh_allowed_cidr = "203.0.113.4/32"
+
+# key_name = "your-ec2-keypair-name"
+
+gitlab_instance_type    = "t3.medium"
+gitlab_root_volume_size = 20
+# gitlab_external_url is required - fill in once you know the Elastic IP,
+# or set it after the first apply and re-apply (see docs/deployment.md).
+gitlab_external_url = "http://REPLACE_WITH_ELASTIC_IP"
+
+runner_manager_instance_type = "t3.small"
+
+worker_instance_type    = "t3.medium"
+worker_root_volume_size = 20
+worker_min_size          = 0
+worker_max_size          = 3
+worker_desired_capacity  = 0

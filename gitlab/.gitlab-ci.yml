@@ -1,0 +1,35 @@
+# Example pipeline for a project running on the self-hosted Instance
+# Executor workers. Adjust stages/scripts for your actual application.
+
+stages:
+  - build
+  - test
+  - lint
+  - deploy
+
+default:
+  tags:
+    - aws
+    - instance
+
+build:
+  stage: build
+  script:
+    - echo "build steps here"
+
+unit_test:
+  stage: test
+  script:
+    - echo "unit test steps here"
+
+lint:
+  stage: lint
+  script:
+    - echo "lint steps here"
+
+deploy:
+  stage: deploy
+  script:
+    - echo "deploy steps here"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
